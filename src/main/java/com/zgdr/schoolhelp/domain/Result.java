@@ -44,4 +44,5 @@ public class Result<T> {
     public static Result error(ResultEnum resultEnum){
         return new Result<Object>(resultEnum, null);
     }
+
 }

@@ -90,4 +90,20 @@ public class UserService {
 //            userRepository.delete(value);
 //        });
     }
+    /**
+     * 判断用户是否存在
+     * @author fishkk
+     * @since 2019/4/23
+     *
+     * @param
+     * @return 用户id
+     */
+    public int exist(Integer id) throws UserException{
+        User user = this.readUserById(id);
+        userRepository.delete(user);
+//        userRepository.findById(id).ifPresent( value ->{
+//            userRepository.delete(value);
+//        });
+        return user.getId();
+    }
 }

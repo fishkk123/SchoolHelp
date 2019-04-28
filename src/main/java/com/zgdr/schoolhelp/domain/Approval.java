@@ -1,16 +1,18 @@
 package com.zgdr.schoolhelp.domain;
 
-import sun.security.util.Length;
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import java.util.Date;
 
 
 /**
- *@创建approval表映射对象
- *@映射表   comment
- *@创建人  fishkk
- *@创建时间2 019/4/28
- *@修改人和其它信息
+ * approval表映射对象
+ *
+ * @author fishkk
+ * @version 1.0
+ * @since 2019/4/27
  */
 @Entity(name = "approval")
 public class Approval {

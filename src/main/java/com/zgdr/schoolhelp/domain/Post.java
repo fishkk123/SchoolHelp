@@ -6,16 +6,14 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.validation.constraints.Size;
 import java.util.Date;
 
-
 /**
- *@创建post表映射对象
- *@映射表  post
- *@创建人  fishkk
- *@创建时间   2019/4/28
- *@修改人和其它信息
+ * post表映射对象
+ *
+ * @author fishkk
+ * @version 1.0
+ * @since 2019/4/27
  */
 @Entity(name = "post")
 public class Post {
@@ -27,36 +25,36 @@ public class Post {
     private Integer postId;
 
     /* 发帖者ID */
-    private  Integer userId;
+    private Integer userId;
 
     /* 标题 */
     @NotBlank
-    private  String  title;
+    private String  title;
 
     /* 贴子内容*/
     @NotBlank
-    private  String content;
+    private String content;
 
     /* 悬赏积分 */
-    private  Integer points;
+    private Integer points;
 
     /* 浏览量*/
-    private  Integer viewNum;
+    private Integer viewNum;
 
     /* 点赞数 */
-    private  Integer approvalNum;
+    private Integer approvalNum;
 
     /* 评论数 */
-    private  Integer commentNum;
+    private Integer commentNum;
 
     /* 举报数*/
-    private  Integer reportNum;
+    private Integer reportNum;
 
     /* 贴子类型*/
-    private  String postType;
+    private String postType;
 
     /* 发帖时间 */
-    private  Date issueTime;
+    private Date issueTime;
 
     public Integer getPostId() {
         return postId;

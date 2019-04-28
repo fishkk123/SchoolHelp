@@ -5,15 +5,14 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
 import java.util.Date;
 
 /**
- *@创建comment表映射对象
- *@映射表   comment
- *@创建人  fishkk
- *@创建时间2 019/4/28
- *@修改人和其它信息
+ * comment表映射对象
+ *
+ * @author fishkk
+ * @version 1.0
+ * @since 2019/4/27
  */
 @Entity(name = "comment")
 public class Comment {

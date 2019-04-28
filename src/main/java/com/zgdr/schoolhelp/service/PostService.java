@@ -1,21 +1,11 @@
 package com.zgdr.schoolhelp.service;
+
 import com.zgdr.schoolhelp.domain.*;
 import com.zgdr.schoolhelp.enums.GlobalResultEnum;
-import com.zgdr.schoolhelp.enums.UserResultEnum;
-import com.zgdr.schoolhelp.exception.*;
+import com.zgdr.schoolhelp.exception.PostException;
 import com.zgdr.schoolhelp.repository.*;
-import javafx.geometry.Pos;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.zgdr.schoolhelp.repository.PostRepository;
-import com.zgdr.schoolhelp.domain.User;
-import com.zgdr.schoolhelp.enums.UserResultEnum;
-import com.zgdr.schoolhelp.exception.UserException;
-import com.zgdr.schoolhelp.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-
 
 import java.util.*;
 
@@ -158,12 +148,13 @@ public class PostService {
      * @author fishkk
      * @since 2019/4/24
      *
-     * @param post_id ,new_content更新内容
+     * @param postId
+     * @param  newContent 更新内容
      * @return void
      */
-    public void updatePost(Integer post_id , String new_content){
-        Post post = postRepository.findById(post_id).orElse(null);
-        post.setContent(new_content);
+    public void updatePost(Integer postId , String newContent){
+        Post post = postRepository.findById(postId).orElse(null);
+        post.setContent(newContent);
         postRepository.save(post);
     }
 
@@ -219,29 +210,38 @@ public class PostService {
     }
 
     /**
-      * @获取全部评论详情  and 获取一堆列表
+      * 获取各种相关列表
       * @author fishkk
-      * @修改时间 2019/4/25
+      * @since 2019/4/25
       *
-      * @参数
-      * @返回值
+      * @param  postId
+      * @return  相关的set或者list
       */
-    public List<Comment> getCommentByPostID(Integer post_id){
-       return commentRepository.getCommentByPostId(post_id);
+    public List<Comment> getCommentByPostID(Integer postId){
+       return commentRepository.getCommentByPostId(postId);
     }
 
-    public Set<Integer> getApprovalList(Integer post_id){
-        return approvalRepository.getListApprovalUser(post_id);
+    public Set<Integer> getApprovalList(Integer postId){
+        return approvalRepository.getListApprovalUser(postId);
     }
 
-    public Set<Integer> getCommentUserList(Integer post_id){
-        return commentRepository.getListCommentUser(post_id);
+    public Set<Integer> getCommentUserList(Integer postId){
+        return commentRepository.getListCommentUser(postId);
     }
 
-    public Set<Integer> getReportUserList(Integer post_id){
-        return reportRepository.getListReportUser(post_id);
+    public Set<Integer> getReportUserList(Integer postId){
+        return reportRepository.getListReportUser(postId);
     }
 
+
+    /**
+     * 获取全部评论详情
+     * @author fishkk
+     * @since 2019/4/25
+     *
+     * @param  id
+     * @return  HashMap
+     */
     public HashMap getPostAndComment(Integer id){
         Post post = this.readPostById(id);
         HashMap hashMap = new HashMap();
@@ -251,6 +251,15 @@ public class PostService {
         return hashMap;
     }
 
+
+    /**
+     * 获取最新的num条贴子
+     * @author fishkk
+     * @since 2019/4/25
+     *
+     * @param  num
+     * @return  返回最新的num条贴子
+     */
     public List<Post>  getLastPostByNum(Integer num){
         List<Post> posts= this.getAll();
         List<Post> posts1 =new ArrayList<>() ;
@@ -265,8 +274,8 @@ public class PostService {
         return posts1;
     }
 
-    public List<Post>  findPostsByPost_type(Integer post_type){
-        return postRepository.findPostsByPost_type(post_type);
+    public List<Post>  findPostsByPostType(Integer post_type){
+        return postRepository.findPostsByPostType(post_type);
     }
 
     public List<Post>  findPostByKeyword(String keyword){
@@ -279,10 +288,12 @@ public class PostService {
      * @author fishkk
      * @since 2019/4/24
      *
-     * @param user_id  post_id comment_id
-     * @return void
+     * @param user_id
+     * @param  postId
+     * @param  comment_id
+     * @return
      */
-    public void sumbitPost(Integer user_id ,Integer post_id ,Integer comment_id){
+    public void sumbitPost(Integer user_id ,Integer postId ,Integer comment_id){
 //        获取支付积分的用户
         User user =  userRepository.findById(user_id).orElse(null);
         Comment comment = commentRepository.findById(comment_id).orElse(null);
@@ -290,7 +301,7 @@ public class PostService {
         Integer user1 =  comment.getUserId();
         User userget =  userRepository.findById(user1).orElse(null);
 //        获取贴子积分
-        Post post = postRepository.findById(post_id).orElse(null);
+        Post post = postRepository.findById(postId).orElse(null);
         Integer points = post.getPoints();
 
         user.setPoints(user.getPoints()-points);
@@ -300,6 +311,15 @@ public class PostService {
 
     }
 
+
+    /**
+     * 判断积分是否充足
+     * @author fishkk
+     * @since 2019/4/25
+     *
+     * @param  post
+     * @return  Boolean
+     */
     public Boolean isRightPoints(Post post){
         User user = userRepository.findById(post.getUserId()).orElse(null);
         Integer points = user.getPoints();

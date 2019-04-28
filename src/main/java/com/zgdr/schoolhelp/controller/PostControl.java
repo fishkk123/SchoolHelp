@@ -131,7 +131,9 @@ public class PostControl {
      */
     @GetMapping(value = "/approval/{post_id}")
     public Result getApprovalUser(@PathVariable("post_id") Integer post_id){
-
+        if(postService.isnull(post_id)){
+            return Result.error(GlobalResultEnum.NOTFOUND);
+        }
         return Result.success(postService.getApprovalList(post_id));
     }
     
@@ -145,6 +147,9 @@ public class PostControl {
       */
     @GetMapping(value = "/comment/{post_id}")
     public Result getCommentUser(@PathVariable("post_id") Integer post_id){
+        if(postService.isnull(post_id)){
+            return Result.error(GlobalResultEnum.NOTFOUND);
+        }
         return  Result.success(postService.getCommentUserList(post_id));
     }
 
@@ -158,6 +163,9 @@ public class PostControl {
       */
     @GetMapping(value = "/report/{post_id}")
     public Result getReportUser(@PathVariable("post_id") Integer post_id){
+        if(postService.isnull(post_id)){
+            return Result.error(GlobalResultEnum.NOTFOUND);
+        }
         return  Result.success(postService.getReportUserList(post_id));
     }
     
@@ -171,7 +179,9 @@ public class PostControl {
       */
     @GetMapping(value = "/comment/all/{post_id}")
     public Result getPostComment(@PathVariable("post_id") Integer post_id){
-
+        if(postService.isnull(post_id)){
+            return Result.error(GlobalResultEnum.NOTFOUND);
+        }
         return Result.success(postService.getCommentByPostID(post_id));
     }
 
@@ -248,14 +258,11 @@ public class PostControl {
     @PostMapping(value = "")
     public Result crateUser(@Valid Post post, BindingResult bindingResult){
         if(bindingResult.hasErrors()){
-            /*
-             * TODO 修改错误类型为表单校验错误
-             *
-             * @author hengyumo
-             * @date 2019/4/17
-             */
 
-            return Result.error(GlobalResultEnum.UNKNOW_ERROR);
+            return Result.error(GlobalResultEnum.NODE);
+        }
+        if (postService.isRightPoints(post)){
+            return Result.error(GlobalResultEnum.MOREPOINTS);
         }
         return Result.success(postService.createPost(post));
     }

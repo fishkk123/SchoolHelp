@@ -10,8 +10,10 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * @创建者 fishkk
- * @创建时间 描述
+ *@创建comment dao
+ *@创建人  fishkk
+ *@创建时间2 019/4/28
+ *@修改人和其它信息
  */
 public interface CommentRepository extends JpaRepository<Comment, Integer>{
       /**
@@ -23,7 +25,7 @@ public interface CommentRepository extends JpaRepository<Comment, Integer>{
        * @返回值   评论列表List<Comment>
        */
       @Query(value = "SELECT * FROM comment WHERE post_id=?1", nativeQuery = true)
-      public List<Comment> findName2(Integer id);
+      public List<Comment> getCommentByPostId(Integer id);
 
       /**
        * @10获取贴子的评论用户列表

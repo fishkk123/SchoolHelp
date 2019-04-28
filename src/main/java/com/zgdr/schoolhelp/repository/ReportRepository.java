@@ -9,8 +9,10 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * @创建者 fishkk
- * @创建时间 描述
+ *@创建 report dao
+ *@创建人  fishkk
+ *@创建时间2 019/4/28
+ *@修改人和其它信息
  */
 public interface ReportRepository extends JpaRepository<Report, Integer>{
     /**

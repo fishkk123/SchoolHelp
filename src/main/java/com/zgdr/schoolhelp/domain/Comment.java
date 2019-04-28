@@ -4,12 +4,16 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 import java.util.Date;
 
-
 /**
- * @创建者 fishkk
- * @创建时间 描述
+ *@创建comment表映射对象
+ *@映射表   comment
+ *@创建人  fishkk
+ *@创建时间2 019/4/28
+ *@修改人和其它信息
  */
 @Entity(name = "comment")
 public class Comment {
@@ -26,6 +30,7 @@ public class Comment {
     private Integer postId;
 
     /* 评论内容 */
+    @NotBlank
     private String commentContent;
 
     /* 评论日期*/

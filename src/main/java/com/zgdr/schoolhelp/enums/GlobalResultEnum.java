@@ -11,7 +11,7 @@ public enum GlobalResultEnum implements ResultEnum {
     UNKNOW_ERROR(-1, "未知错误"),
     SUCCESS(0, "成功"),
     NOTFOUND(404,"未找到贴子"),
-    NODE(100,"描述不能为空"),
+    NODE(100,"输入错误"),
     MOREPOINTS(101,"积分不足"),
 
     ;

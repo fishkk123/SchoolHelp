@@ -8,11 +8,10 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 
 /**
- * PostDao
- *
- * @author fishkk
- * @version 1.0
- * @since 2019/4/23
+ *@创建 post dao
+ *@创建人  fishkk
+ *@创建时间2 019/4/28
+ *@修改人和其它信息
  */
 public interface PostRepository extends JpaRepository<Post, Integer> {
     /**

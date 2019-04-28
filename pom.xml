@@ -70,5 +70,8 @@
             </plugin>
         </plugins>
     </build>
+    <!--单元测试-->
+
+
 
 </project>

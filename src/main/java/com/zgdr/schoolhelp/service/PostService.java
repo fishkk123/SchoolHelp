@@ -69,6 +69,10 @@ public class PostService {
      * @return post
      */
     public Post createPost(Post post){
+//        积分计算的另一种方式
+//        User user = userRepository.findById(post.getUserId()).orElse(null);
+//        user.setPoints(user.getPoints()-post.getPoints());
+//        userRepository.save(user);
         post.setPoints(post.getPoints());
         post.setPostType(post.getPostType());
         post.setCommentNum(0);
@@ -206,9 +210,7 @@ public class PostService {
      */
     public void  createComment(Comment comment){
         Post post=postRepository.findById(comment.getPostId()).orElse(null);
-//        if(post == null){
-//            return null;
-//        }
+
         post.setCommentNum((post.getCommentNum()+1));
         postRepository.save(post);
         Date date = new Date();
@@ -225,7 +227,7 @@ public class PostService {
       * @返回值
       */
     public List<Comment> getCommentByPostID(Integer post_id){
-       return commentRepository.findName2(post_id);
+       return commentRepository.getCommentByPostId(post_id);
     }
 
     public Set<Integer> getApprovalList(Integer post_id){
@@ -296,5 +298,14 @@ public class PostService {
         userRepository.save(user);
         userRepository.save(userget);
 
+    }
+
+    public Boolean isRightPoints(Post post){
+        User user = userRepository.findById(post.getUserId()).orElse(null);
+        Integer points = user.getPoints();
+        if(points<post.getPoints()){
+            return true;
+        }
+        return false;
     }
 }

@@ -4,9 +4,13 @@ import sun.security.util.Length;
 import javax.persistence.*;
 import java.util.Date;
 
+
 /**
- * @创建者 fishkk
- * @创建时间 描述
+ *@创建approval表映射对象
+ *@映射表   comment
+ *@创建人  fishkk
+ *@创建时间2 019/4/28
+ *@修改人和其它信息
  */
 @Entity(name = "approval")
 public class Approval {
@@ -19,7 +23,7 @@ public class Approval {
     private Integer userId ;
 
 
-    /* 被点赞IPost*/
+    /* 被点赞贴子的ID*/
     private Integer postId;
 
 

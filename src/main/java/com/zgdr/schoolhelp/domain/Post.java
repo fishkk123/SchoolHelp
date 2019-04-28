@@ -1,16 +1,21 @@
 package com.zgdr.schoolhelp.domain;
 
+import org.hibernate.validator.constraints.NotBlank;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.validation.constraints.Size;
 import java.util.Date;
+
+
 /**
- *post表映射对象
- *
- * @author fishkk
- * @version 1.0
- * @since 2019/4/23
+ *@创建post表映射对象
+ *@映射表  post
+ *@创建人  fishkk
+ *@创建时间   2019/4/28
+ *@修改人和其它信息
  */
 @Entity(name = "post")
 public class Post {
@@ -25,10 +30,12 @@ public class Post {
     private  Integer userId;
 
     /* 标题 */
+    @NotBlank
     private  String  title;
 
     /* 贴子内容*/
-    private  String  content;
+    @NotBlank
+    private  String content;
 
     /* 悬赏积分 */
     private  Integer points;
@@ -46,10 +53,10 @@ public class Post {
     private  Integer reportNum;
 
     /* 贴子类型*/
-    private  String  postType;
+    private  String postType;
 
     /* 发帖时间 */
-    private  Date    issueTime;
+    private  Date issueTime;
 
     public Integer getPostId() {
         return postId;

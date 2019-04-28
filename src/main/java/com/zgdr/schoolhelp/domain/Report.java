@@ -1,16 +1,21 @@
 package com.zgdr.schoolhelp.domain;
 
+import org.hibernate.validator.constraints.NotBlank;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.validation.constraints.Size;
 import java.util.Date;
-/**
- * @创建者 fishkk
- * @创建时间 描述
- */
 
+/**
+ *@描述  创建report映射表对象
+ *@映射表 report
+ *@创建人  fishkk
+ *@创建时间  2019/4/28
+ *@修改人和其它信息
+ */
 @Entity(name = "report")
 public class Report {
     /* 举报ID */
@@ -19,23 +24,22 @@ public class Report {
     private Integer reportId;
 
     /* 举报者用户ID */
-    private Integer  userId;
+    private Integer userId;
 
     /* 被举报贴子ID */
     private Integer postId;
 
     /* 举报描述 */
-    @Size(min=4,max=230,message = "输入不能为空")
-    private String report_des;
+    @NotBlank
+    private String reportDes;
 
     /* 举报日期*/
     private Date reportTime;
 
-    public Report(Integer userId, Integer postId,
-                  @Size(min = 4, max = 230, message = "输入不能为空") String report_des, Date reportTime) {
+    public Report(Integer userId, Integer postId, @NotBlank String reportDes, Date reportTime) {
         this.userId = userId;
         this.postId = postId;
-        this.report_des = report_des;
+        this.reportDes = reportDes;
         this.reportTime = reportTime;
     }
 
@@ -66,12 +70,12 @@ public class Report {
         this.postId = postId;
     }
 
-    public String getReport_des() {
-        return report_des;
+    public String getReportDes() {
+        return reportDes;
     }
 
-    public void setReport_des(String report_des) {
-        this.report_des = report_des;
+    public void setReportDes(String reportDes) {
+        this.reportDes = reportDes;
     }
 
     public Date getReportTime() {
@@ -80,16 +84,5 @@ public class Report {
 
     public void setReportTime(Date reportTime) {
         this.reportTime = reportTime;
-    }
-
-    @Override
-    public String toString() {
-        return "Report{" +
-                "reportId=" + reportId +
-                ", userId=" + userId +
-                ", postId=" + postId +
-                ", report_des='" + report_des + '\'' +
-                ", reportTime=" + reportTime +
-                '}';
     }
 }

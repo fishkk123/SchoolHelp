@@ -27,6 +27,17 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
     public List<Post> findPostsByPostType(Integer id);
 
 
+    /**
+     * 通过帮助者id来获得贴子详情
+     * @author fishkk
+     * @since  2019/4/27
+     *
+     * @param  id 贴子类型id
+     * @return    List<Post>
+     */
+    @Query(value = "SELECT * FROM post WHERE help_user_id=?1", nativeQuery = true)
+    public List<Post> findAllByHelpedUserId(Integer id);
+
 
     /**
      * @10 通过贴子id来获得贴子的举报用户id列表

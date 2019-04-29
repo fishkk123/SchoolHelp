@@ -1,6 +1,9 @@
 package com.zgdr.schoolhelp.controller;
 
+import com.zgdr.schoolhelp.annotation.PassToken;
+import com.zgdr.schoolhelp.annotation.UserLoginToken;
 import com.zgdr.schoolhelp.domain.*;
+import com.zgdr.schoolhelp.utils.*;
 import com.zgdr.schoolhelp.enums.GlobalResultEnum;
 import com.zgdr.schoolhelp.service.PostService;
 import org.slf4j.Logger;
@@ -9,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 /**
@@ -38,6 +42,7 @@ public class PostControl {
       * @param  id 贴子id
       * @return 贴子以及评论的信息
       */
+     @PassToken
      @GetMapping (value = "/id/{id}")
      public Result  getPostAllById(@PathVariable("id") Integer id){
          if(postService.isnull(id)){
@@ -55,6 +60,7 @@ public class PostControl {
      * @param  id
      * @return 贴子的相关信息
      */
+    @PassToken
     @GetMapping(value = "/id/brief/{id}")
     public Result getPostByID(@PathVariable("id") Integer id){
         if(postService.isnull(id)){
@@ -71,9 +77,9 @@ public class PostControl {
        * @param num
        * @return 返回最新的num条消息 num>贴子总数则返回全部贴子
        */
+    @PassToken
     @GetMapping(value = "/num/{num}")
     public Result  getLastPostByNum(@PathVariable("num") Integer num){
-
         return Result.success(postService.getLastPostByNum(num));
     }
 
@@ -85,6 +91,7 @@ public class PostControl {
         * @param typeId
         * @return 放回类别id为typeid的贴子列表
         */
+    @PassToken
     @GetMapping(value = "/type/{typeId}")
     public Result  getPostByTypeId(@PathVariable("typeId") Integer typeId){
         return  Result.success(postService.findPostsByPostType(typeId));
@@ -98,9 +105,9 @@ public class PostControl {
        * @param  keyword 关键词
        * @return title中含关键词的贴子列表
        */
+    @PassToken
     @GetMapping(value = "/search/{keyword}")
     public Result getPostByKeyword(@PathVariable("keyword") String keyword){
-
         return  Result.success(postService.findPostByKeyword(keyword));
     }
 
@@ -108,7 +115,6 @@ public class PostControl {
     /**
       * 6获取热门搜索关键词
       *
-      * TODO
       *
       * @author fishkk
       * @since 2019/4/25
@@ -116,20 +122,22 @@ public class PostControl {
       * @param
       * @return 热词列表
       */
+    @PassToken
     @GetMapping(value = "/search/hot")
     public Result getHotWord(){
-        return null ;
+        return Result.success(postService.hotWord());
     }
 
 
     /**
-     * 获取贴子的点赞列表
+     * 7获取贴子的点赞列表
      * @author fishkk
      * @since 2019/4/27
      *
      * @param  postId 贴子id
      * @return 该帖子的点赞用户id列表<Set>
      */
+    @PassToken
     @GetMapping(value = "/approval/{postId}")
     public Result getApprovalUser(@PathVariable("postId") Integer postId){
         if(postService.isnull(postId)){
@@ -146,6 +154,7 @@ public class PostControl {
       * @param postId 贴子id
       * @return 该帖子的评论用户id列表<Set>
       */
+    @PassToken
     @GetMapping(value = "/comment/{postId}")
     public Result getCommentUser(@PathVariable("postId") Integer postId){
         if(postService.isnull(postId)){
@@ -162,6 +171,7 @@ public class PostControl {
       * @param postId 贴子id
       * @return 该帖子的举报用户id列表<Set>
       */
+    @PassToken
     @GetMapping(value = "/report/{postId}")
     public Result getReportUser(@PathVariable("postId") Integer postId){
         if(postService.isnull(postId)){
@@ -178,6 +188,7 @@ public class PostControl {
       * @param  postId 贴子id
       * @return  List<Comment> 评论列表
       */
+    @PassToken
     @GetMapping(value = "/comment/all/{postId}")
     public Result getPostComment(@PathVariable("postId") Integer postId){
         if(postService.isnull(postId)){
@@ -188,20 +199,20 @@ public class PostControl {
 
 
     /**
-     * 10获取当前帖子的评论列表
+     * 11点赞
      * @author fishkk
      * @since 2019/4/25
-     *
+     * token
      * @param  approval
      * @return
      *
      */
+    @UserLoginToken
     @PostMapping(value = "/approval")
-    public void approval(@Valid Approval approval,BindingResult bindingResult){
-        if(postService.isnull(approval.getPostId())){
-            //return Result.error(GlobalResultEnum.NOTFOUND);
-        }
-        postService.addPostApproval(approval);
+    public void approval(@Valid Approval approval,BindingResult bindingResult,
+                         HttpServletRequest httpServletRequest){
+        Integer userId = TokenUtil.getUserIdByRequest(httpServletRequest);
+        postService.addPostApproval(approval,userId);
         //return  null;
     }
     
@@ -209,14 +220,17 @@ public class PostControl {
       * 12评论
       * @author fishkk
       * @since 2019/4/25
-      *
+      *token
       * @param comment
       * @param bindingResult 表单验证结果
       * @return
       */
+    @UserLoginToken
     @PostMapping(value = "/comment")
-    public void comment(@Valid Comment comment ,BindingResult bindingResult){
-        postService.createComment(comment);
+    public void comment(@Valid Comment comment ,BindingResult bindingResult,
+                        HttpServletRequest httpServletRequest){
+        Integer userId = TokenUtil.getUserIdByRequest(httpServletRequest);
+        postService.createComment(comment,userId);
     }
     
     /**
@@ -228,33 +242,37 @@ public class PostControl {
       * @param bindingResult 表单验证结果
       * @return
       */
+    @UserLoginToken
     @PostMapping(value = "/report")
-    public void report(@Valid Report report ,BindingResult bindingResult){
-           postService.createReport(report);
+    public void report(@Valid Report report ,BindingResult bindingResult,
+                       HttpServletRequest httpServletRequest){
+        Integer userId = TokenUtil.getUserIdByRequest(httpServletRequest);
+        postService.createReport(report,userId);
     }
 
 
     /**
-      * 11帖主结贴
+      * 14帖主结贴
       *
       * @author fishkk
       * @since 2019/4/27
       *
-      * @param userId
       * @param  postId
       * @param submitCommentId 获得积分的评论
       * @return
       */
+    @UserLoginToken
     @PostMapping(value = "/submit")
-    public void submitPost(@RequestParam("userId") Integer userId,
-                           @RequestParam("postId") Integer postId,
-                           @RequestParam("submitCommentId") Integer submitCommentId){
+    public void submitPost(@RequestParam("postId") Integer postId,
+                           @RequestParam("submitCommentId") Integer submitCommentId,
+                           HttpServletRequest httpServletRequest){
+        Integer userId = TokenUtil.getUserIdByRequest(httpServletRequest);
          postService.sumbitPost(userId,postId,submitCommentId);
 
     }
 
     /**
-     * 10发帖
+     * 15发帖
      * @author fishkk
      * @since 2019/4/25
      *
@@ -262,35 +280,41 @@ public class PostControl {
      * @param bindingResult 表单验证结果
      * @return  贴子对象
      */
+    @UserLoginToken
     @PostMapping(value = "")
-    public Result crateUser(@Valid Post post, BindingResult bindingResult){
+    public Result crateUser(@Valid Post post,
+                            BindingResult bindingResult,
+                            HttpServletRequest httpServletRequest){
+        Integer userId = TokenUtil.getUserIdByRequest(httpServletRequest);
         if(bindingResult.hasErrors()){
-
             return Result.error(GlobalResultEnum.NODE);
         }
-        if (postService.isRightPoints(post)){
+        if (postService.isRightPoints(post,userId)){
             return Result.error(GlobalResultEnum.MOREPOINTS);
         }
-        return Result.success(postService.createPost(post));
+
+        return Result.success(postService.createPost(post,userId));
     }
 
 
     /**
-     * 10删帖
+     * 16删帖
      * @author fishkk
      * @since 2019/4/25
      *
      * @param postId 贴子id
-     * @return 
+     * @return
      */
+    @UserLoginToken
     @DeleteMapping(value = "")
-    public void deletePostById(@RequestParam("postId") Integer postId){
+    public void deletePostById(@RequestParam("postId") Integer postId,
+                               HttpServletRequest httpServletRequest){
 
         postService.deletePostById(postId);
     }
 
     /**
-      * 14当前用户更新帖子
+      * 17当前用户更新帖子
       * @author fishkk
       * @since 2019/4/25
       *
@@ -298,9 +322,11 @@ public class PostControl {
       * @param newContent 修改的正文内容
       * @return void
       */
+    @UserLoginToken
     @PutMapping(value = "")
     public void updatePost(@RequestParam("postId") Integer postId,
-                           @RequestParam("newContent") String newContent){
+                           @RequestParam("newContent") String newContent,
+                           HttpServletRequest httpServletRequest){
 
         postService.updatePost(postId , newContent);
     }

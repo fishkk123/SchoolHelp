@@ -58,17 +58,20 @@ public class PostService {
      * @param post
      * @return post
      */
-    public Post createPost(Post post){
+    public Post createPost(Post post,Integer userId){
 //        积分计算的另一种方式
-//        User user = userRepository.findById(post.getUserId()).orElse(null);
-//        user.setPoints(user.getPoints()-post.getPoints());
-//        userRepository.save(user);
+
+        User user = userRepository.findById(userId).orElse(null);
+        user.setPoints(user.getPoints()-post.getPoints());
+        userRepository.save(user);
         post.setPoints(post.getPoints());
+        post.setUserId(userId);
         post.setPostType(post.getPostType());
         post.setCommentNum(0);
         post.setReportNum(0);
         post.setViewNum(0);
         post.setApprovalNum(0);
+        post.setHelpUserId(-1);
         Date date = new Date();
         post.setIssueTime(date);
         return postRepository.save(post);
@@ -117,16 +120,17 @@ public class PostService {
      * @param approval
      * @return App
      */
-    public Approval addPostApproval(Approval approval){
+    public void addPostApproval(Approval approval,Integer userId){
+        approval.setUserId(userId);//
         Post post=postRepository.findById(approval.getPostId()).orElse(null);
         if(post == null){
-            return null;
+            throw new PostException(GlobalResultEnum.NOTFOUND);
         }
         post.setApprovalNum(post.getApprovalNum()+1);
         postRepository.save(post);
         Date date = new Date();
         approval.setApprovalTime(date);
-        return  approvalRepository.save(approval);
+
     }
 
 
@@ -181,8 +185,12 @@ public class PostService {
      * @param report
      * @return void
      */
-    public void  createReport(Report report){
+    public void  createReport(Report report,Integer userId){
+        report.setUserId(userId);//
         Post post=postRepository.findById(report.getPostId()).orElse(null);
+        if(post == null){
+            throw new PostException(GlobalResultEnum.NOTFOUND);
+        }
         post.setReportNum(post.getReportNum()+1);
         postRepository.save(post);
         Date date = new Date();
@@ -199,9 +207,12 @@ public class PostService {
      * @param comment
      * @return void
      */
-    public void  createComment(Comment comment){
+    public void  createComment(Comment comment,Integer userId){
+        comment.setUserId(userId);
         Post post=postRepository.findById(comment.getPostId()).orElse(null);
-
+        if(post == null){
+            throw new PostException(GlobalResultEnum.NOTFOUND);
+        }
         post.setCommentNum((post.getCommentNum()+1));
         postRepository.save(post);
         Date date = new Date();
@@ -246,8 +257,10 @@ public class PostService {
         Post post = this.readPostById(id);
         HashMap hashMap = new HashMap();
         List<Comment> commentList = this.getCommentByPostID(id);
+        post.setViewNum(post.getViewNum()+1);
         hashMap.put("comments",commentList);
         hashMap.put("post",post);
+        postRepository.save(post);
         return hashMap;
     }
 
@@ -274,8 +287,8 @@ public class PostService {
         return posts1;
     }
 
-    public List<Post>  findPostsByPostType(Integer post_type){
-        return postRepository.findPostsByPostType(post_type);
+    public List<Post>  findPostsByPostType(Integer postType){
+        return postRepository.findPostsByPostType(postType);
     }
 
     public List<Post>  findPostByKeyword(String keyword){
@@ -288,27 +301,25 @@ public class PostService {
      * @author fishkk
      * @since 2019/4/24
      *
-     * @param user_id
+     * @param userId
      * @param  postId
-     * @param  comment_id
+     * @param  commentId
      * @return
      */
-    public void sumbitPost(Integer user_id ,Integer postId ,Integer comment_id){
-//        获取支付积分的用户
-        User user =  userRepository.findById(user_id).orElse(null);
-        Comment comment = commentRepository.findById(comment_id).orElse(null);
+    public void sumbitPost(Integer userId ,Integer postId ,Integer commentId){
+
+        Comment comment = commentRepository.findById(commentId).orElse(null);
         //       获取获得积分的用户
         Integer user1 =  comment.getUserId();
         User userget =  userRepository.findById(user1).orElse(null);
 //        获取贴子积分
         Post post = postRepository.findById(postId).orElse(null);
         Integer points = post.getPoints();
-
-        user.setPoints(user.getPoints()-points);
         userget.setPoints(userget.getPoints()+points);
-        userRepository.save(user);
+        post.setPoints(0);
+        post.setHelpUserId(user1);
+        postRepository.save(post);
         userRepository.save(userget);
-
     }
 
 
@@ -317,15 +328,25 @@ public class PostService {
      * @author fishkk
      * @since 2019/4/25
      *
-     * @param  post
+     * @param  userId
      * @return  Boolean
      */
-    public Boolean isRightPoints(Post post){
-        User user = userRepository.findById(post.getUserId()).orElse(null);
-        Integer points = user.getPoints();
-        if(points<post.getPoints()){
+    public Boolean isRightPoints(Post post,Integer userId){
+        User user = userRepository.findById(userId).orElse(null);
+        if(user.getPoints()<post.getPoints()){
             return true;
         }
         return false;
+    }
+
+    public List<String> hotWord(){
+        List x = new ArrayList();
+        x.add("二手书交易");
+        x.add("面试");
+        x.add("实习");
+        x.add("生活");
+        x.add("运动");
+        x.add("学习");
+        return  x;
     }
 }

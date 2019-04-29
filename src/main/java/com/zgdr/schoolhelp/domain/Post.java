@@ -27,6 +27,9 @@ public class Post {
     /* 发帖者ID */
     private Integer userId;
 
+    /* 帮助者ID*/
+    private Integer helpUserId;
+
     /* 标题 */
     @NotBlank
     private String  title;
@@ -144,12 +147,22 @@ public class Post {
         this.issueTime = issueTime;
     }
 
+    public Integer getHelpUserId() {
+        return helpUserId;
+    }
+
+    public void setHelpUserId(Integer helpUserId) {
+        this.helpUserId = helpUserId;
+    }
+
     public Post() {
     }
 
-    public Post(Integer userID, String title, String content, Integer points, Integer viewNum,
-                Integer approvalNum, Integer commentNum, Integer reportNum, String postType, Date issueTime) {
-        this.userId = userID;
+    public Post(Integer userId, Integer helpUserId, @NotBlank String title, @NotBlank String content,
+                Integer points, Integer viewNum, Integer approvalNum, Integer commentNum, Integer reportNum,
+                String postType, Date issueTime) {
+        this.userId = userId;
+        this.helpUserId = helpUserId;
         this.title = title;
         this.content = content;
         this.points = points;
@@ -166,6 +179,7 @@ public class Post {
         return "Post{" +
                 "postId=" + postId +
                 ", userId=" + userId +
+                ", helpUserId=" + helpUserId +
                 ", title='" + title + '\'' +
                 ", content='" + content + '\'' +
                 ", points=" + points +

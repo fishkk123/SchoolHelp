@@ -1,5 +1,6 @@
 package com.zgdr.schoolhelp.controller;
 
+import com.zgdr.schoolhelp.annotation.NotNull;
 import com.zgdr.schoolhelp.annotation.PassToken;
 import com.zgdr.schoolhelp.annotation.UserLoginToken;
 import com.zgdr.schoolhelp.domain.*;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+
 
 /**
  * PostControl
@@ -288,9 +290,12 @@ public class PostControl {
      * @param bindingResult 表单验证结果
      * @return  贴子对象
      */
+
     @UserLoginToken
     @PostMapping(value = "")
+//    @NotNull(value = "points")
     public Result crateUser(@Valid Post post,
+//                          @RequestParam(name = "points") Integer points,
                             BindingResult bindingResult,
                             HttpServletRequest httpServletRequest){
         Integer userId = TokenUtil.getUserIdByRequest(httpServletRequest);
@@ -300,10 +305,10 @@ public class PostControl {
         if (postService.isRightPoints(post,userId)){
             return Result.error(PostResultEnum.MORE_POINTS);
         }
-        if (post.getPoints().toString().isEmpty() ){
-            return Result.error(PostResultEnum.NOT_POINTS);
-        }
-        if (post.getPoints() < 0 ){
+//        if (post.getPoints().equals(new Object()) ){
+//            return Result.error(PostResultEnum.NOT_POINTS);
+//        }
+        if ( post.getPoints() < 0 ){
             return Result.error(PostResultEnum.ERROR_POINTS);
         }
         return Result.success(postService.createPost(post,userId));

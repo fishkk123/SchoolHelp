@@ -1,6 +1,5 @@
 package com.zgdr.schoolhelp.domain;
 
-import com.sun.istack.internal.NotNull;
 import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.NotEmpty;
 
@@ -8,6 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 /**
@@ -41,7 +41,8 @@ public class Post {
     private String content;
 
     /* 悬赏积分 */
-    private Integer points;
+    @NotNull
+    private Integer points ;
 
     /* 浏览量*/
     private Integer viewNum;
@@ -59,7 +60,7 @@ public class Post {
     private String postType;
 
     /* 发帖时间 */
-    private Date issueTime;
+    private Date issueTime ;
 
     public Integer getPostId() {
         return postId;
@@ -161,7 +162,7 @@ public class Post {
     }
 
     public Post(Integer userId, Integer helpUserId, @NotBlank String title, @NotBlank String content,
-                @NotEmpty Integer points, Integer viewNum, Integer approvalNum, Integer commentNum, Integer reportNum,
+                @NotNull  Integer points, Integer viewNum, Integer approvalNum, Integer commentNum, Integer reportNum,
                 String postType, Date issueTime) {
         this.userId = userId;
         this.helpUserId = helpUserId;

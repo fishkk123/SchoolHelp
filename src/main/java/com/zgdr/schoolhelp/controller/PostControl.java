@@ -3,9 +3,11 @@ package com.zgdr.schoolhelp.controller;
 import com.zgdr.schoolhelp.annotation.PassToken;
 import com.zgdr.schoolhelp.annotation.UserLoginToken;
 import com.zgdr.schoolhelp.domain.*;
-import com.zgdr.schoolhelp.utils.*;
 import com.zgdr.schoolhelp.enums.GlobalResultEnum;
+import com.zgdr.schoolhelp.enums.PostResultEnum;
+import com.zgdr.schoolhelp.exception.PostException;
 import com.zgdr.schoolhelp.service.PostService;
+import com.zgdr.schoolhelp.utils.TokenUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +48,7 @@ public class PostControl {
      @GetMapping (value = "/id/{id}")
      public Result  getPostAllById(@PathVariable("id") Integer id){
          if(postService.isnull(id)){
-             return Result.error(GlobalResultEnum.NOTFOUND);
+             return Result.error(PostResultEnum.NOT_FOUND);
          }
          return Result.success(postService.getPostAndComment(id) );
      }
@@ -64,7 +66,7 @@ public class PostControl {
     @GetMapping(value = "/id/brief/{id}")
     public Result getPostByID(@PathVariable("id") Integer id){
         if(postService.isnull(id)){
-            return Result.error(GlobalResultEnum.NOTFOUND);
+            return Result.error(PostResultEnum.NOT_FOUND);
         }
         return Result.success(postService.readPostById(id));
     }
@@ -141,7 +143,7 @@ public class PostControl {
     @GetMapping(value = "/approval/{postId}")
     public Result getApprovalUser(@PathVariable("postId") Integer postId){
         if(postService.isnull(postId)){
-            return Result.error(GlobalResultEnum.NOTFOUND);
+            return Result.error(PostResultEnum.NOT_FOUND);
         }
         return Result.success(postService.getApprovalList(postId));
     }
@@ -158,7 +160,7 @@ public class PostControl {
     @GetMapping(value = "/comment/{postId}")
     public Result getCommentUser(@PathVariable("postId") Integer postId){
         if(postService.isnull(postId)){
-            return Result.error(GlobalResultEnum.NOTFOUND);
+            return Result.error(PostResultEnum.NOT_FOUND);
         }
         return  Result.success(postService.getCommentUserList(postId));
     }
@@ -175,7 +177,7 @@ public class PostControl {
     @GetMapping(value = "/report/{postId}")
     public Result getReportUser(@PathVariable("postId") Integer postId){
         if(postService.isnull(postId)){
-            return Result.error(GlobalResultEnum.NOTFOUND);
+            return Result.error(PostResultEnum.NOT_FOUND);
         }
         return  Result.success(postService.getReportUserList(postId));
     }
@@ -192,7 +194,7 @@ public class PostControl {
     @GetMapping(value = "/comment/all/{postId}")
     public Result getPostComment(@PathVariable("postId") Integer postId){
         if(postService.isnull(postId)){
-            return Result.error(GlobalResultEnum.NOTFOUND);
+            return Result.error(PostResultEnum.NOT_FOUND);
         }
         return Result.success(postService.getCommentByPostID(postId));
     }
@@ -229,6 +231,9 @@ public class PostControl {
     @PostMapping(value = "/comment")
     public void comment(@Valid Comment comment ,BindingResult bindingResult,
                         HttpServletRequest httpServletRequest){
+        if(bindingResult.hasErrors()){
+            throw new PostException(PostResultEnum.NOT_COMMENT);
+        }
         Integer userId = TokenUtil.getUserIdByRequest(httpServletRequest);
         postService.createComment(comment,userId);
     }
@@ -246,6 +251,9 @@ public class PostControl {
     @PostMapping(value = "/report")
     public void report(@Valid Report report ,BindingResult bindingResult,
                        HttpServletRequest httpServletRequest){
+        if(bindingResult.hasErrors()){
+            throw new PostException(PostResultEnum.NO_DES);
+        }
         Integer userId = TokenUtil.getUserIdByRequest(httpServletRequest);
         postService.createReport(report,userId);
     }
@@ -287,12 +295,17 @@ public class PostControl {
                             HttpServletRequest httpServletRequest){
         Integer userId = TokenUtil.getUserIdByRequest(httpServletRequest);
         if(bindingResult.hasErrors()){
-            return Result.error(GlobalResultEnum.NODE);
+            return Result.error(PostResultEnum.NODE);
         }
         if (postService.isRightPoints(post,userId)){
-            return Result.error(GlobalResultEnum.MOREPOINTS);
+            return Result.error(PostResultEnum.MORE_POINTS);
         }
-
+        if (post.getPoints().toString().isEmpty() ){
+            return Result.error(PostResultEnum.NOT_POINTS);
+        }
+        if (post.getPoints() < 0 ){
+            return Result.error(PostResultEnum.ERROR_POINTS);
+        }
         return Result.success(postService.createPost(post,userId));
     }
 
@@ -325,9 +338,10 @@ public class PostControl {
     @UserLoginToken
     @PutMapping(value = "")
     public void updatePost(@RequestParam("postId") Integer postId,
-                           @RequestParam("newContent") String newContent,
-                           HttpServletRequest httpServletRequest){
-
+                           @RequestParam("newContent") String newContent){
+        if(newContent.isEmpty()){
+            throw new PostException(PostResultEnum.NO_DES);
+        }
         postService.updatePost(postId , newContent);
     }
 

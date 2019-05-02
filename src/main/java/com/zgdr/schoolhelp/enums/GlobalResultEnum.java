@@ -10,12 +10,9 @@ package com.zgdr.schoolhelp.enums;
 public enum GlobalResultEnum implements ResultEnum {
     UNKNOW_ERROR(-1, "未知错误"),
     SUCCESS(0, "成功"),
-    NOTFOUND(404,"未找到贴子"),
-    NODE(100,"输入错误"),
-    MOREPOINTS(101,"积分不足"),
     NOT_LOGIN(2,"NOT_LOGIN"),
     USER_NOT_FIND(3,"USER_NOT_FIND"),
-    TOKEN_CHECK_FAILED(4,"TOKEN_CHECK_FAILED")
+    TOKEN_CHECK_FAILED(4,"TOKEN_CHECK_FAILED"),
 
     ;
 

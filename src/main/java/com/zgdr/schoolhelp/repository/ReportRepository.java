@@ -14,6 +14,8 @@ import java.util.Set;
  * @since 2019/4/27
  */
 public interface ReportRepository extends JpaRepository<Report, Integer>{
+
+    public void deleteByPostId(Integer postId);
     /**
      * 通过贴子id来获得贴子的举报用户id列表
      * @author fishkk
@@ -24,4 +26,17 @@ public interface ReportRepository extends JpaRepository<Report, Integer>{
      */
     @Query(value = "SELECT user_id FROM report WHERE post_id=?1", nativeQuery = true)
     public Set<Integer> getListReportUser(Integer id);
+
+
+    /**
+     * 删除举报通过贴子id
+     * @author fishkk
+     * @since 2019/4/27
+     *
+     * @param  postId 贴子id
+     * @return
+     */
+
+
+
 }

@@ -7,7 +7,7 @@ import com.zgdr.schoolhelp.enums.*;
  * @创建时间 描述
  */
 public class PostException extends ExceptionParent {
-    public PostException(GlobalResultEnum globalResultEnum) {
-        super(globalResultEnum);
+    public PostException(PostResultEnum postResultEnum) {
+        super(postResultEnum);
     }
 }

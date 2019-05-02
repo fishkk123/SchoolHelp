@@ -2,6 +2,7 @@ package com.zgdr.schoolhelp.domain;
 
 import org.hibernate.validator.constraints.NotBlank;
 
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -34,13 +35,6 @@ public class Report {
 
     /* 举报日期*/
     private Date reportTime;
-
-    public Report(Integer userId, Integer postId, @NotBlank String reportDes, Date reportTime) {
-        this.userId = userId;
-        this.postId = postId;
-        this.reportDes = reportDes;
-        this.reportTime = reportTime;
-    }
 
     public Report() {
     }
@@ -83,5 +77,16 @@ public class Report {
 
     public void setReportTime(Date reportTime) {
         this.reportTime = reportTime;
+    }
+
+    @Override
+    public String toString() {
+        return "Report{" +
+                "reportId=" + reportId +
+                ", userId=" + userId +
+                ", postId=" + postId +
+                ", reportDes='" + reportDes + '\'' +
+                ", reportTime=" + reportTime +
+                '}';
     }
 }

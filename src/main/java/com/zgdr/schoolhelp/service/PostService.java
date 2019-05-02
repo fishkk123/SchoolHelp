@@ -2,10 +2,12 @@ package com.zgdr.schoolhelp.service;
 
 import com.zgdr.schoolhelp.domain.*;
 import com.zgdr.schoolhelp.enums.GlobalResultEnum;
+import com.zgdr.schoolhelp.enums.PostResultEnum;
 import com.zgdr.schoolhelp.exception.PostException;
 import com.zgdr.schoolhelp.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
@@ -33,6 +35,7 @@ public class PostService {
 
     @Autowired
     private ApprovalRepository approvalRepository;
+
 
     @Autowired
     private UserRepository userRepository;
@@ -88,7 +91,7 @@ public class PostService {
     public Post readPostById(Integer id){
         Post post = postRepository.findById(id).orElse(null);
         if (post == null){
-            throw new PostException(GlobalResultEnum.NOTFOUND);
+            throw new PostException(PostResultEnum.NOT_FOUND);
         }
 
         return post;
@@ -120,17 +123,28 @@ public class PostService {
      * @param approval
      * @return App
      */
-    public void addPostApproval(Approval approval,Integer userId){
-        approval.setUserId(userId);//
-        Post post=postRepository.findById(approval.getPostId()).orElse(null);
-        if(post == null){
-            throw new PostException(GlobalResultEnum.NOTFOUND);
+    public Integer addPostApproval(Approval approval,Integer userId) {
+        List<Approval> approvalList = approvalRepository.findAll();
+        Post post = postRepository.findById(approval.getPostId()).orElse(null);
+        if (post == null) {
+            throw new PostException(PostResultEnum.NOT_FOUND);
         }
-        post.setApprovalNum(post.getApprovalNum()+1);
+        for (Approval approval1 : approvalList) {
+            if ( ((int)approval1.getPostId()==(int)approval.getPostId()) &&((int)approval1.getUserId()==(int)userId)) {
+                approvalRepository.deleteById(approval1.getApprovalId());
+                post.setApprovalNum(post.getApprovalNum()-1);
+                return null;
+            }
+        }
+
+        approval.setUserId(userId);//
+
+        post.setApprovalNum(post.getApprovalNum() + 1);
         postRepository.save(post);
         Date date = new Date();
         approval.setApprovalTime(date);
-
+        approvalRepository.save(approval);
+        return null ;
     }
 
 
@@ -142,8 +156,13 @@ public class PostService {
      * @param id 贴子id
      * @return void
      */
+    @Transactional
     public void deletePostById(Integer id){
         Post post = this.readPostById(id);
+
+        reportRepository.deleteByPostId(id);
+        commentRepository.deleteByPostId(id);
+        approvalRepository.deleteByPostId(id);
         postRepository.delete(post);
     }
 
@@ -157,6 +176,7 @@ public class PostService {
      * @return void
      */
     public void updatePost(Integer postId , String newContent){
+
         Post post = postRepository.findById(postId).orElse(null);
         post.setContent(newContent);
         postRepository.save(post);
@@ -186,10 +206,13 @@ public class PostService {
      * @return void
      */
     public void  createReport(Report report,Integer userId){
+        if (report.getReportDes() == null){
+            throw new PostException(PostResultEnum.NO_DES);
+        }
         report.setUserId(userId);//
         Post post=postRepository.findById(report.getPostId()).orElse(null);
         if(post == null){
-            throw new PostException(GlobalResultEnum.NOTFOUND);
+            throw new PostException(PostResultEnum.NOT_FOUND);
         }
         post.setReportNum(post.getReportNum()+1);
         postRepository.save(post);
@@ -211,7 +234,7 @@ public class PostService {
         comment.setUserId(userId);
         Post post=postRepository.findById(comment.getPostId()).orElse(null);
         if(post == null){
-            throw new PostException(GlobalResultEnum.NOTFOUND);
+            throw new PostException(PostResultEnum.NOT_FOUND);
         }
         post.setCommentNum((post.getCommentNum()+1));
         postRepository.save(post);
@@ -254,7 +277,7 @@ public class PostService {
      * @return  HashMap
      */
     public HashMap getPostAndComment(Integer id){
-        Post post = this.readPostById(id);
+        Post post = postRepository.findById(id).orElse(null);
         HashMap hashMap = new HashMap();
         List<Comment> commentList = this.getCommentByPostID(id);
         post.setViewNum(post.getViewNum()+1);
